@@ -1,0 +1,229 @@
+query property($id: ID!) {
+    property(id: $id) {
+        id
+        status
+        size
+        externalId
+        type
+        totalRentGross
+        entryPrice
+        marketingType
+        rented
+        salesLegalTexts {
+            id
+            type
+            text
+        }
+        data {
+            referenceId
+            name
+            address {
+                city
+                country
+                region
+                street
+                houseNumber
+                zipCode
+            }
+            showAddress
+            energyCertificate {
+                energyCertificateType
+                creationDate
+                primaryEnergyProvider
+                primaryEnergyConsumption
+                usageCertificate {
+                  energyConsumption
+                  energyEfficiencyClass
+                }
+                demandCertificate {
+                    endEnergyConsumption
+                    energyEfficiencyClass
+                }
+            }
+            basePrice
+            availableFrom {
+                dateAvailable
+                stringAvailable
+            }
+            heatingCostIncluded
+            flatShare
+            size
+            documents {
+                url
+                title
+                type
+                identifier
+                extension
+                encrypted
+            }
+            parkingPriceIncludedToAdditionalCosts
+            totalRentGross
+            otherCosts
+            parkingPrice
+            previousTenantAppointmentEnabled
+            shortTermAccommodation
+            buildingCondition
+            attachments {
+                url
+                title
+                type
+                identifier
+                extension
+                encrypted
+            }
+            constructionYear
+            heater
+            objectType
+            numberOfFloors
+            bathRooms
+            guestToilette
+            kitchenette
+            landArea
+            storeRoom
+            washDryRoom
+            garden
+            gardenUse
+            attic
+            ground
+            bicycleRoom
+            seniors
+            barrierFree
+            fireplace
+            parkingSpaces {
+                type
+                price
+                count
+                purchasePrice
+            }
+            totalParkingPrice
+            totalParkingPurchasePrice
+            historicBuilding
+            rooms
+            halfRooms
+            basePrice
+            elevator
+            tvSatCable
+            flatType
+            floor
+            heatingCost
+            heatingCostIncluded
+            serviceCharge
+            bailment
+            showContact
+            objectDescription
+            objectLocationText
+            objectMiscellaneousText
+            furnishingDescription
+            customerName
+            customerLogo
+            numberOfBalconies
+            numberOfTerraces
+            numberOfLoggias
+            balconyTerraceArea
+            numberOfBedrooms
+            washingMachineConnection
+            shutter
+            intercomType
+            furnishingType
+            basementAvailable
+            basementSize
+            wheelchairAccessible
+            bathroomEquipment {
+                shower
+                bathtub
+                window
+                bidet
+                urinal
+            }
+            garageData {
+                garageType
+                availableUntil
+                length
+                width
+                height
+                freeUntil
+            }
+            commercialData {
+                commercialType
+                commercialSubType
+                flooringType
+                hasCanteen
+                lanCables
+                highVoltage
+                airConditioning
+                distanceToTrainStation
+                distanceToHighway
+                distanceToPublicTransport
+                distanceToAirport
+                pricePerSquareMeter
+            }
+            salesData {
+                price
+                courtage
+                serviceCharge
+            }
+        }
+        titleImage {
+          url
+          title
+          type
+          identifier
+          extension
+          encrypted
+          index
+        }
+        branding {
+            theme {
+                name
+                primaryColor
+                secondaryColor
+                primaryTextColor
+                secondaryTextColor
+                buttonTextColor
+                backgroundColor
+                cardBackgroundColor
+                active
+            }
+            logoRedirectUrl
+            logo {
+                title
+                url
+                name
+            }
+            favicon {
+                url
+                title
+                name
+            }
+            itpSettings {
+                dmvCard
+                shopCard
+                movingChecklist
+                movingAuction
+                schufaCard
+                whitelabel
+                allowUserToLeaveItp
+                showCreditScreeningDocumentUploadArea
+            }
+        }
+        allowContinueAsGuest
+        applyLink
+        customerDefinedFieldValues {
+            definition {
+                id
+                type
+                label
+                order
+            }
+            value {
+                type
+                value
+            }
+        }
+        customer {
+            id
+            name
+            logo
+        }
+    }
+}
