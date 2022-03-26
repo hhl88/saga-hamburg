@@ -1,3 +1,5 @@
+import logging
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from comparator import SupportedComparator
 from app import App
@@ -5,8 +7,8 @@ import log
 import time
 
 logger = log.setup_logger(__name__)
-log.setup_logger("apscheduler")
-log.setup_logger("urllib3")
+log.setup_logger("apscheduler").setLevel(logging.INFO)
+log.setup_logger("urllib3").setLevel(logging.WARNING)
 infos = [
     SupportedComparator(min_rooms=4, max_total_rent=1300),
     SupportedComparator(min_rooms=3, max_total_rent=1300, is_house=True),

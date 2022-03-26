@@ -49,6 +49,7 @@ class App:
         if Config.DEBUG:
             logger.debug('There are %d pages' % (len(pagination_links) + 1))
             logger.debug('Page 1 has %d articles' % len(articles))
+            logger.debug('There are in total %d articles' % len(articles))
 
         # Handle each pagination link
         # for idx, pagination_link in enumerate(pagination_links):
@@ -56,14 +57,13 @@ class App:
         #     found = find_all_links_in_page(html=soup)
         #     print('Page %d has %d articles' % (idx + 2, len(found)))
         #     articles = articles + found
-        logger.debug('There are in total %d articles' % len(articles))
         for idx, article in enumerate(articles):
             if Config.DEBUG:
                 logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
             if article.id not in done:
                 if article.available and any(compartor.is_match(article) for compartor in self.comparators):
                     if self.mqtt.is_connected():
-                        logger.debug("Publish to mqtt: {0}: {1}".format(article.id, json.dumps(article.dump())))
+                        logger.info("Publish to mqtt: {0}: {1}".format(article.id, json.dumps(article.dump())))
                         self.mqtt.publish('saga-hamburg/events',
                                           json.dumps(article.dump(), ensure_ascii=False, indent=4))
                     done[article.id] = today.strftime("%d.%m.%Y")
