@@ -13,11 +13,21 @@ def _parse_bool(val: Union[str, bool]) -> bool:  # pylint: disable=E1136
     return val if type(val) == bool else val.lower() in ['true', 'yes', '1']
 
 
+def _parse_int(val: Union[str, int]) -> int:  # pylint: disable=E1136
+    if type(val) == int:
+        return val
+    try:
+        return int(val)
+    except ValueError:
+        raise "Not integer value"
+
+
 class AppConfig:
     BASE_URL: str
     BASE_APPLY_URL: str
     BASE_DETAIL_URL: str
     MQTT_BROKER_URL: str
+    MQTT_BROKER_PORT: int = 1833
     MQTT_USER: str
     MQTT_PASS: str
 
@@ -44,6 +54,8 @@ class AppConfig:
                 var_type = get_type_hints(AppConfig)[field]
                 if var_type == bool:
                     value = _parse_bool(env.get(field, default_value))
+                elif var_type == int:
+                    value = _parse_int(env.get(field, default_value))
                 else:
                     value = var_type(env.get(field, default_value))
 

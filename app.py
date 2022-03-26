@@ -8,12 +8,20 @@ from config import Config
 from article import Article
 
 
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
+
+
 class App:
     def __init__(self, comparators=None):
         self.path = os.path.dirname(os.path.abspath(__file__))
         self.done_file_path = os.path.join(self.path, 'done.json')
         self.mqtt = mqtt.Client('app-saga-hamburg', clean_session=True)
+        self.mqtt.on_connect = on_connect
         self.mqtt.username_pw_set(username=Config.MQTT_USER, password=Config.MQTT_PASS)
+
+        self.mqtt.connect(host=Config.MQTT_BROKER_URL, port=Config.MQTT_BROKER_PORT)
+        self.mqtt.loop_start()
 
         self.comparators = comparators
 
@@ -48,7 +56,7 @@ class App:
         print('There are in total %d articles' % len(articles), '\n')
         if not self.mqtt.is_connected():
             print("Connect to MQTT")
-            self.mqtt.connect(host=Config.MQTT_BROKER_URL)
+            self.mqtt.connect(host=Config.MQTT_BROKER_URL, port=Config.MQTT_BROKER_PORT)
             print("is connected", self.mqtt.is_connected())
         for idx, article in enumerate(articles):
             print('%d: ' % (idx + 1), article.title)
