@@ -4,3 +4,4 @@ requests==2.27.1
 lxml==4.8.0
 python-dotenv==0.20.0
 paho-mqtt==1.6.1
+apscheduler==3.9.1
