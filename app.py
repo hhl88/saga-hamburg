@@ -64,7 +64,7 @@ class App:
                     compartor.is_match(article) for compartor in self.comparators):
                 if self.mqtt.is_connected():
                     print("Publish event")
-                    self.mqtt.publish('saga/events', article.dump())
+                    self.mqtt.publish('saga/events', json.dumps(article.dump(), ensure_ascii=False, indent=4))
                 done[article.id] = today.strftime("%d.%m.%Y")
 
         if not Config.DEBUG:
