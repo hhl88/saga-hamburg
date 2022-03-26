@@ -1,7 +1,10 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from comparator import SupportedComparator
 from app import App
+import log
+import time
 
+logger = log.setup_logger(__name__)
 infos = [
     SupportedComparator(min_rooms=4, max_total_rent=1300),
     SupportedComparator(min_rooms=3, max_total_rent=1300, is_house=True),
@@ -10,12 +13,21 @@ infos = [
 if __name__ == "__main__":
     app = App(comparators=infos)
     scheduler = BackgroundScheduler()
-
+    job_id = "saga_hamburg_cron_job"
     try:
-        scheduler.add_job(app.run, "cron", day_of_week="mon-sat", hour='8-18', minute="*", id='saga_hamburg_cron_job')
+        logger.debug("Adding cronjob")
+        scheduler.add_job(app.run, "cron", day_of_week="mon-sat", hour='8-18', minute="*", id=job_id)
+        logger.debug("Starting cronjob")
         scheduler.start()
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
+        logger.debug("Terminating app by keyboard")
+
         if app is not None and app.mqtt is not None:
+            logger.debug("Stopping mqtt client")
             app.mqtt.loop_stop()
         if scheduler is not None:
-            scheduler.remove_job('saga_hamburg_cron_job')
+            logger.debug("Removing cronjob")
+            scheduler.remove_job(job_id)
+            scheduler.shutdown()

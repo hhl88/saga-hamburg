@@ -4,15 +4,21 @@ import json
 import requests as req
 from bs4 import BeautifulSoup
 import paho.mqtt.client as mqtt
+import log
 from config import Config
 from article import Article
+
+logger = log.setup_logger(__name__)
 
 
 class App:
     def __init__(self, comparators=None):
         self.path = os.path.dirname(os.path.abspath(__file__))
         self.done_file_path = os.path.join(self.path, 'done.json')
-        self.mqtt = mqtt.Client('app-saga-hamburg', clean_session=True)
+        self.mqtt = mqtt.Client('app-saga-hamburg')
+        logger.debug("mqtt {0}".format(json.dumps(
+            {'host': Config.MQTT_BROKER_URL, 'port': Config.MQTT_BROKER_PORT, 'user': Config.MQTT_USER,
+             'pass': Config.MQTT_PASS})))
         self.mqtt.username_pw_set(username=Config.MQTT_USER, password=Config.MQTT_PASS)
 
         self.mqtt.connect(host=Config.MQTT_BROKER_URL, port=Config.MQTT_BROKER_PORT)
@@ -21,6 +27,7 @@ class App:
         self.comparators = comparators
 
     def run(self):
+        logger.debug("RUN")
         if self.comparators is None or len(self.comparators) == 0:
             return
         today = datetime.date.today()
@@ -37,10 +44,10 @@ class App:
         soup = self._get_response(url=Config.BASE_URL + '/immobiliensuche', query_params={'type': "wohnungen"})
         # Get list of all pagination link
         pagination_links = self._get_list_pagination_link(soup)
-        print('There are %d pages' % (len(pagination_links) + 1))
+        logger.debug('There are %d pages' % (len(pagination_links) + 1))
         # Handle first page
         articles = self._find_all_articles_in_page(soup)
-        print('Page 1 has %d articles' % len(articles))
+        logger.debug('Page 1 has %d articles' % len(articles))
 
         # Handle each pagination link
         # for idx, pagination_link in enumerate(pagination_links):
@@ -48,23 +55,19 @@ class App:
         #     found = find_all_links_in_page(html=soup)
         #     print('Page %d has %d articles' % (idx + 2, len(found)))
         #     articles = articles + found
-        print('There are in total %d articles' % len(articles), '\n')
-        if not self.mqtt.is_connected():
-            print("Connect to MQTT")
-            self.mqtt.connect(host=Config.MQTT_BROKER_URL, port=Config.MQTT_BROKER_PORT)
-            print("is connected", self.mqtt.is_connected())
+        logger.debug('There are in total %d articles' % len(articles))
         for idx, article in enumerate(articles):
-            print('%d: ' % (idx + 1), article.title)
-            if article.id not in done and article.available and any(
-                    compartor.is_match(article) for compartor in self.comparators):
-                if self.mqtt.is_connected():
-                    print("Publish event")
-                    self.mqtt.publish('saga/events', json.dumps(article.dump(), ensure_ascii=False, indent=4))
-                done[article.id] = today.strftime("%d.%m.%Y")
+            logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
+            if article.id not in done:
+                if article.available and any(compartor.is_match(article) for compartor in self.comparators):
+                    if self.mqtt.is_connected():
+                        logger.debug("Publish event")
+                        self.mqtt.publish('saga-hamburg/events',
+                                          json.dumps(article.dump(), ensure_ascii=False, indent=4))
+                    done[article.id] = today.strftime("%d.%m.%Y")
 
-        if not Config.DEBUG:
-            with open(self.done_file_path, 'w') as f:
-                json.dump(done, f, ensure_ascii=False, indent=4)
+        with open(self.done_file_path, 'w') as f:
+            json.dump(done, f, ensure_ascii=False, indent=4)
 
     def _get_response(self, url: str, query_params=None):
         """
@@ -149,7 +152,6 @@ class App:
             article.living_space = data['size']
             article.no_rooms = data['rooms'] + (0.5 if data['halfRooms'] == 1 else 0)
             article.available = not json_data['rented']
-            print(data['availableFrom']['dateAvailable'])
             article.available_from = datetime.datetime.strptime(data['availableFrom']['dateAvailable'], '%Y-%m-%d')
             article.required_wbs = json_data['wbs'] if 'wbs' in json_data else False
             if 'floor' in data and data['floor'] is None:
