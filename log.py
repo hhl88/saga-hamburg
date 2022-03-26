@@ -2,16 +2,16 @@ import logging
 
 
 class ColorCodes:
-    grey = "\x1b[38;21m"
-    green = "\x1b[1;32m"
-    yellow = "\x1b[33;21m"
-    red = "\x1b[31;21m"
-    bold_red = "\x1b[31;1m"
-    blue = "\x1b[1;34m"
-    light_blue = "\x1b[1;36m"
-    purple = "\x1b[1;35m"
-    reset = "\x1b[0m"
-
+    GREY = '\033[90m'
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    WHITE = '\033[2m'
+    UNDERLINE = '\033[4m'
+    RESET = "\033[0m"
+    BOLD = '\033[1m'
 
 class CustomFormatter(logging.Formatter):
     """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
@@ -20,11 +20,11 @@ class CustomFormatter(logging.Formatter):
         super().__init__()
         self.fmt = fmt
         self.FORMATS = {
-            logging.DEBUG: ColorCodes.grey + self.fmt + ColorCodes.reset,
-            logging.INFO: ColorCodes.blue + self.fmt + ColorCodes.reset,
-            logging.WARNING: ColorCodes.yellow + self.fmt + ColorCodes.reset,
-            logging.ERROR: ColorCodes.red + self.fmt + ColorCodes.reset,
-            logging.CRITICAL: ColorCodes.bold_red + self.fmt + ColorCodes.reset
+            logging.DEBUG: ColorCodes.WHITE + self.fmt + ColorCodes.RESET,
+            logging.INFO: ColorCodes.GREEN + self.fmt + ColorCodes.RESET,
+            logging.WARNING: ColorCodes.YELLOW + self.fmt + ColorCodes.RESET,
+            logging.ERROR: ColorCodes.RED + self.fmt + ColorCodes.RESET,
+            logging.CRITICAL: ColorCodes.RED + ColorCodes.BOLD + self.fmt + ColorCodes.RESET
         }
 
     def format(self, record):

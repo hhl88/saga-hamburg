@@ -27,7 +27,6 @@ class App:
         self.comparators = comparators
 
     def run(self):
-        logger.debug("RUN")
         if self.comparators is None or len(self.comparators) == 0:
             return
         today = datetime.date.today()
@@ -44,10 +43,12 @@ class App:
         soup = self._get_response(url=Config.BASE_URL + '/immobiliensuche', query_params={'type': "wohnungen"})
         # Get list of all pagination link
         pagination_links = self._get_list_pagination_link(soup)
-        logger.debug('There are %d pages' % (len(pagination_links) + 1))
         # Handle first page
         articles = self._find_all_articles_in_page(soup)
-        logger.debug('Page 1 has %d articles' % len(articles))
+
+        if Config.DEBUG:
+            logger.debug('There are %d pages' % (len(pagination_links) + 1))
+            logger.debug('Page 1 has %d articles' % len(articles))
 
         # Handle each pagination link
         # for idx, pagination_link in enumerate(pagination_links):
@@ -57,11 +58,12 @@ class App:
         #     articles = articles + found
         logger.debug('There are in total %d articles' % len(articles))
         for idx, article in enumerate(articles):
-            logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
+            if Config.DEBUG:
+                logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
             if article.id not in done:
                 if article.available and any(compartor.is_match(article) for compartor in self.comparators):
                     if self.mqtt.is_connected():
-                        logger.debug("Publish event")
+                        logger.debug("Publish to mqtt: {0}: {1}".format(article.id, json.dumps(article.dump())))
                         self.mqtt.publish('saga-hamburg/events',
                                           json.dumps(article.dump(), ensure_ascii=False, indent=4))
                     done[article.id] = today.strftime("%d.%m.%Y")
@@ -128,12 +130,14 @@ class App:
        """
         with open(os.path.join(self.path, "query.txt"), "r+") as f:
             query = f.read()
+        variables = {
+            'id': article.id
+        }
         r = req.post(url="{0}/tenant/graphql".format(Config.BASE_DETAIL_URL),
-                     json={'operationName': 'property', 'variables': '{"id": "146863417"}', 'query': query})
+                     json={'operationName': "property", 'variables': json.dumps(variables), 'query': query})
         if r.status_code == 200:
             json_data = json.loads(r.text)['data']['property']
             data = json_data['data']
-
             if len(data['attachments']) > 0:
                 article.img_link = data['attachments'][0]['url']
             # address

@@ -1,3 +1,4 @@
+import datetime
 from address import Address
 from cost import Cost
 from config import Config
@@ -16,7 +17,7 @@ class Article:
         self.no_rooms = no_rooms
         self.living_space = living_space
         self.available = True
-        self.available_from = None
+        self.available_from: datetime.date = None
 
         self.is_house = False
         self.floor = 0
@@ -36,7 +37,7 @@ class Article:
             'no_rooms': self.no_rooms,
             'living_space': self.living_space,
             'available': self.available,
-            'available_from': self.available_from.strftime("%d.%m.%Y"),
+            'available_from': self.available_from.strftime("%d.%m.%Y") if self.available_from is not None else None,
             'is_house': self.is_house,
             'floor': self.floor,
             'no_floor': self.no_floor,

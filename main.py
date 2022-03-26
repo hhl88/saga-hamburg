@@ -5,9 +5,12 @@ import log
 import time
 
 logger = log.setup_logger(__name__)
+log.setup_logger("apscheduler")
+log.setup_logger("urllib3")
 infos = [
     SupportedComparator(min_rooms=4, max_total_rent=1300),
     SupportedComparator(min_rooms=3, max_total_rent=1300, is_house=True),
+    SupportedComparator(min_rooms=3, max_total_rent=1300, is_house=False, max_floor=1, min_living_space=80),
 ]
 
 if __name__ == "__main__":
@@ -15,19 +18,19 @@ if __name__ == "__main__":
     scheduler = BackgroundScheduler()
     job_id = "saga_hamburg_cron_job"
     try:
-        logger.debug("Adding cronjob")
+        logger.info("Adding cronjob")
         scheduler.add_job(app.run, "cron", day_of_week="mon-sat", hour='8-18', minute="*", id=job_id)
-        logger.debug("Starting cronjob")
+        logger.info("Starting cronjob")
         scheduler.start()
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        logger.debug("Terminating app by keyboard")
+        logger.error("Terminating app by keyboard")
 
         if app is not None and app.mqtt is not None:
-            logger.debug("Stopping mqtt client")
+            logger.warning("Stopping mqtt client")
             app.mqtt.loop_stop()
         if scheduler is not None:
-            logger.debug("Removing cronjob")
+            logger.warning("Removing cronjob")
             scheduler.remove_job(job_id)
             scheduler.shutdown()
