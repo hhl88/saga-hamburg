@@ -27,7 +27,7 @@ class AppConfig:
     BASE_APPLY_URL: str
     BASE_DETAIL_URL: str
     MQTT_BROKER_URL: str
-    MQTT_BROKER_PORT: int = 1833
+    MQTT_BROKER_PORT: int = 1883
     MQTT_USER: str
     MQTT_PASS: str
 
