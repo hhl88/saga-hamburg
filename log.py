@@ -1,4 +1,6 @@
 import logging
+import datetime
+import os
 
 
 class ColorCodes:
@@ -13,6 +15,7 @@ class ColorCodes:
     RESET = "\033[0m"
     BOLD = '\033[1m'
 
+
 class CustomFormatter(logging.Formatter):
     """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
 
@@ -20,7 +23,7 @@ class CustomFormatter(logging.Formatter):
         super().__init__()
         self.fmt = fmt
         self.FORMATS = {
-            logging.DEBUG: ColorCodes.WHITE + self.fmt + ColorCodes.RESET,
+            logging.DEBUG: ColorCodes.BOLD + self.fmt + ColorCodes.RESET,
             logging.INFO: ColorCodes.GREEN + self.fmt + ColorCodes.RESET,
             logging.WARNING: ColorCodes.YELLOW + self.fmt + ColorCodes.RESET,
             logging.ERROR: ColorCodes.RED + self.fmt + ColorCodes.RESET,
@@ -33,32 +36,35 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger(name, log_file_path: str = None):
+def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
     # logger settings
-    log_file_max_size = 1024 * 1024 * 20  # megabytes
-    log_num_backups = 3
+    global file_handler
     log_format = "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
     log_filemode = "w"  # w: overwrite; a: append
-
+    today = datetime.date.today()
     # setup logger
 
+    logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG)
+
     if log_file_path is not None:
-        logging.basicConfig(filename=log_file_path, format=log_format, filemode=log_filemode, level=logging.DEBUG)
-        rotate_file = logging.handlers.RotatingFileHandler(
-            log_file_path, maxBytes=log_file_max_size, backupCount=log_num_backups
-        )
-    else:
-        logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG)
+        file_handler = logging.FileHandler('{0}_{1}.log'.format(log_file_path, today.strftime('%Y_%m_%d')))
+    elif log_all_to_file:
+        path = os.path.dirname(os.path.abspath(__file__))
+        file_handler = logging.FileHandler(os.path.join(path, 'all_{0}.log'.format(today.strftime('%Y_%m_%d'))))
 
     logger = logging.getLogger(name)
-
-    if log_file_path is not None and rotate_file is not None:
-        logger.addHandler(rotate_file)
 
     # print log messages to console
     stdout_handler = logging.StreamHandler()
     stdout_handler.setLevel(logging.DEBUG)
     stdout_handler.setFormatter(CustomFormatter(log_format))
     logger.addHandler(stdout_handler)
+
+    # write log messages to file
+    if file_handler is not None:
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(CustomFormatter(log_format))
+        logger.addHandler(file_handler)
+
     logger.propagate = False
     return logger

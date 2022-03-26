@@ -14,6 +14,7 @@ infos = [
 ]
 
 if __name__ == "__main__":
+    logger.info("---------------------------------START--------------------------------------")
     app = App(comparators=infos)
     scheduler = BackgroundScheduler()
     job_id = "saga_hamburg_cron_job"
