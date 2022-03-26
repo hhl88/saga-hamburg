@@ -10,5 +10,12 @@ infos = [
 if __name__ == "__main__":
     app = App(comparators=infos)
     scheduler = BackgroundScheduler()
-    scheduler.add_job(app.run, "saga-hamburg-cronjob", day_of_week="mon-sat", hour='8-18', minute="*")
-    scheduler.start()
+
+    try:
+        scheduler.add_job(app.run, "cron", day_of_week="mon-sat", hour='8-18', minute="*", id='saga_hamburg_cron_job')
+        scheduler.start()
+    except KeyboardInterrupt:
+        if app is not None and app.mqtt is not None:
+            app.mqtt.loop_stop()
+        if scheduler is not None:
+            scheduler.remove_job('saga_hamburg_cron_job')
