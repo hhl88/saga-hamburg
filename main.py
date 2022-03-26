@@ -19,7 +19,7 @@ if __name__ == "__main__":
     job_id = "saga_hamburg_cron_job"
     try:
         logger.info("Adding cronjob")
-        scheduler.add_job(app.run, "cron", day_of_week="mon-sat", hour='8-18', minute="*", id=job_id)
+        scheduler.add_job(app.run, "cron", day_of_week="mon-sun", minute="*", id=job_id)
         logger.info("Starting cronjob")
         scheduler.start()
         while True:
