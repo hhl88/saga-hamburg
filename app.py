@@ -8,10 +8,6 @@ from config import Config
 from article import Article
 
 
-
-
-
-
 class App:
     def __init__(self, comparators=None):
         self.path = os.path.dirname(os.path.abspath(__file__))
@@ -50,22 +46,21 @@ class App:
         #     print('Page %d has %d articles' % (idx + 2, len(found)))
         #     articles = articles + found
         print('There are in total %d articles' % len(articles), '\n')
-        if not self.mqtt.is_connected:
+        if not self.mqtt.is_connected():
+            print("Connect to MQTT")
             self.mqtt.connect(host=Config.MQTT_BROKER_URL)
+            print("is connected", self.mqtt.is_connected())
         for idx, article in enumerate(articles):
             print('%d: ' % (idx + 1), article.title)
             if article.id not in done and article.available and any(
                     compartor.is_match(article) for compartor in self.comparators):
-                if self.mqtt.is_connected:
+                if self.mqtt.is_connected():
+                    print("Publish event")
                     self.mqtt.publish('saga/events', article.dump())
                 done[article.id] = today.strftime("%d.%m.%Y")
 
         with open(self.done_file_path, 'w') as f:
             json.dump(done, f, ensure_ascii=False, indent=4)
-
-        if not self.mqtt.is_connected:
-            self.mqtt.connect(host=Config.MQTT_BROKER_URL)
-        self.mqtt.publish()
 
     def _get_response(self, url: str, query_params=None):
         """
