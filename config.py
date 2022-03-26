@@ -23,6 +23,7 @@ def _parse_int(val: Union[str, int]) -> int:  # pylint: disable=E1136
 
 
 class AppConfig:
+    DEBUG: bool = False
     BASE_URL: str
     BASE_APPLY_URL: str
     BASE_DETAIL_URL: str

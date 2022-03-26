@@ -67,8 +67,9 @@ class App:
                     self.mqtt.publish('saga/events', article.dump())
                 done[article.id] = today.strftime("%d.%m.%Y")
 
-        with open(self.done_file_path, 'w') as f:
-            json.dump(done, f, ensure_ascii=False, indent=4)
+        if not Config.DEBUG:
+            with open(self.done_file_path, 'w') as f:
+                json.dump(done, f, ensure_ascii=False, indent=4)
 
     def _get_response(self, url: str, query_params=None):
         """
