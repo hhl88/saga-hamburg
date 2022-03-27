@@ -40,7 +40,7 @@ def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
     # logger settings
     global file_handler
     log_format = "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
-    log_filemode = "w"  # w: overwrite; a: append
+    log_filemode = "a"  # w: overwrite; a: append
     today = datetime.date.today()
     # setup logger
 
