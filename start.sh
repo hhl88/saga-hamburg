@@ -51,4 +51,6 @@ killApp
 echo "Starting app"
 nohup python3 main.py > /dev/null 2>&1 &
 APP_PID=$!
+
 echo "$APP_PID" > $PID_FILE
+echo "App started"
