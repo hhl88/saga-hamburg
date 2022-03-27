@@ -38,14 +38,17 @@ killApp() {
   	if [ "$APP_RUNNING" == "true" ];
   	then
   		echo "  Warning: Could not kill stale app process. Ignoring."
+    else
+      echo "  Running app killed"
   	fi
   fi
 }
 
 # kill running app
+echo "Killing running app "
 killApp
-echo "Running app killed"
 
+echo "Starting app"
 nohup python3 main.py > /dev/null 2>&1 &
 APP_PID=$!
 echo "$APP_PID" > $PID_FILE
