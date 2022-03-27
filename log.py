@@ -1,4 +1,6 @@
 import logging
+import logging.handlers as handlers
+
 import datetime
 import os
 
@@ -37,20 +39,26 @@ class CustomFormatter(logging.Formatter):
 
 
 def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
-    # logger settings
     global file_handler
+    global error_file_handler
+
+    # logger settings
     log_format = "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
     log_filemode = "a"  # w: overwrite; a: append
-    today = datetime.date.today()
     # setup logger
 
     logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG)
 
     if log_file_path is not None:
-        file_handler = logging.FileHandler('{0}_{1}.log'.format(log_file_path, today.strftime('%Y_%m_%d')))
+        # file_handler = logging.FileHandler('{0}_{1}.log'.format(log_file_path, today.strftime('%Y_%m_%d')))
+        file_handler = handlers.TimedRotatingFileHandler(log_file_path, when='W0')
+
     elif log_all_to_file:
         path = os.path.dirname(os.path.abspath(__file__))
-        file_handler = logging.FileHandler(os.path.join(path, 'all_{0}.log'.format(today.strftime('%Y_%m_%d'))))
+        # file_handler = logging.FileHandler(os.path.join(path, 'normal.log'))
+        file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal.log'), when='W0')
+        error_file_handler = handlers.RotatingFileHandler(os.path.join(path, 'error.log'), maxBytes=1024 * 1024 * 5,
+                                                          backupCount=3)
 
     logger = logging.getLogger(name)
 
@@ -65,6 +73,12 @@ def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(CustomFormatter(log_format))
         logger.addHandler(file_handler)
+
+    # write error log messages to file
+    if error_file_handler is not None:
+        error_file_handler.setLevel(logging.ERROR)
+        error_file_handler.setFormatter(CustomFormatter(log_format))
+        logger.addHandler(error_file_handler)
 
     logger.propagate = False
     return logger
