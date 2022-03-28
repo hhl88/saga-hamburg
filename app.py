@@ -117,7 +117,10 @@ class App:
         title = article_info.find('h3', {'class': 'teaser-h'}).text.strip()
 
         # img
-        img_path = a.find('img')['src']
+        img = a.find('img')
+        img_path = None
+        if img is not None:
+            img_path = a.find('img')['src']
 
         # street
         street = sub_info.find('span').text.strip()

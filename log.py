@@ -47,19 +47,19 @@ def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
     log_filemode = "a"  # w: overwrite; a: append
     # setup logger
 
-    logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG)
+    logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG, force=True)
 
     if log_file_path is not None:
         # file_handler = logging.FileHandler('{0}_{1}.log'.format(log_file_path, today.strftime('%Y_%m_%d')))
-        file_handler = handlers.TimedRotatingFileHandler(log_file_path, when='W0', interval=1)
+        file_handler = handlers.TimedRotatingFileHandler(log_file_path, when='midnight', interval=1)
         file_handler.suffix = '%Y-%m-%d.log'
         file_handler.extMatch = r"^\d{4}-\d{2}-\d{2}\.log$"
     elif log_all_to_file:
         path = os.path.dirname(os.path.abspath(__file__))
         # file_handler = logging.FileHandler(os.path.join(path, 'normal.log'))
-        file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal'), when='W0', interval=1)
+        file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal'), when='midnight', interval=1)
         file_handler.suffix = '%Y-%m-%d.log'
-        file_handler.extMatch = r"^\d{4}-\d{2}-\d{2}\.log$"
+        file_handler.extMatch = r"^\d{4}\-\d{2}\-\d{2}\.log$"
         error_file_handler = handlers.RotatingFileHandler(os.path.join(path, 'error.log'), maxBytes=1024 * 1024 * 5,
                                                           backupCount=3)
 
