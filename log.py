@@ -1,8 +1,7 @@
 import logging
 import logging.handlers as handlers
-
-import datetime
 import os
+from singleton import Singleton
 
 
 class ColorCodes:
@@ -38,50 +37,57 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logger(name, log_file_path: str = None, log_all_to_file: bool = True):
-    global file_handler
-    global error_file_handler
+class MyLogger(Singleton):
+    def __init__(self):
+        super().__init__()
+        if self._initialized:
+            print(111111)
+            log_format = "%(asctime)s [%(levelname)s] [%(threadName)s] [%(name)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
+            log_filemode = "a"  # w: overwrite; a: append
 
-    # logger settings
-    log_format = "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
-    log_filemode = "a"  # w: overwrite; a: append
-    # setup logger
+            # setup stdout logger
+            self.stdout_handler = logging.StreamHandler()
+            self.stdout_handler.setLevel(logging.DEBUG)
+            self.stdout_handler.setFormatter(CustomFormatter(log_format))
 
-    logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG, force=True)
+            path = os.path.dirname(os.path.abspath(__file__))
+            # setup normal logger file
+            self.file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal'), when='W0',
+                                                                  encoding='utf8')
+            self.file_handler.suffix = '%Y-%m-%d.log'
+            self.file_handler.extMatch = r"^\d{4}\-\d{2}\-\d{2}\.log$"
+            self.file_handler.setLevel(logging.DEBUG)
+            self.file_handler.setFormatter(CustomFormatter(log_format))
 
-    if log_file_path is not None:
-        # file_handler = logging.FileHandler('{0}_{1}.log'.format(log_file_path, today.strftime('%Y_%m_%d')))
-        file_handler = handlers.TimedRotatingFileHandler(log_file_path, when='midnight', interval=1)
-        file_handler.suffix = '%Y-%m-%d.log'
-        file_handler.extMatch = r"^\d{4}-\d{2}-\d{2}\.log$"
-    elif log_all_to_file:
-        path = os.path.dirname(os.path.abspath(__file__))
-        # file_handler = logging.FileHandler(os.path.join(path, 'normal.log'))
-        file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal'), when='midnight', interval=1)
-        file_handler.suffix = '%Y-%m-%d.log'
-        file_handler.extMatch = r"^\d{4}\-\d{2}\-\d{2}\.log$"
-        error_file_handler = handlers.RotatingFileHandler(os.path.join(path, 'error.log'), maxBytes=1024 * 1024 * 5,
-                                                          backupCount=3)
+            # setup error logger file
+            self.error_file_handler = handlers.RotatingFileHandler(os.path.join(path, 'error.log'),
+                                                                   maxBytes=1024 * 1024 * 5,
+                                                                   encoding='utf8',
+                                                                   backupCount=3)
+            self.error_file_handler.setLevel(logging.ERROR)
+            self.error_file_handler.setFormatter(CustomFormatter(log_format))
 
-    logger = logging.getLogger(name)
+            logging.basicConfig(format=log_format, filemode=log_filemode, level=logging.DEBUG, force=True)
+            self.logger = self.setup_logger('root')
 
-    # print log messages to console
-    stdout_handler = logging.StreamHandler()
-    stdout_handler.setLevel(logging.DEBUG)
-    stdout_handler.setFormatter(CustomFormatter(log_format))
-    logger.addHandler(stdout_handler)
+    def get_root_logger(self):
+        return self.logger
 
-    # write log messages to file
-    if file_handler is not None:
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(CustomFormatter(log_format))
-        logger.addHandler(file_handler)
+    def setup_logger(self, name):
+        logger = logging.getLogger(name)
 
-    # write error log messages to file
-    if error_file_handler is not None:
-        error_file_handler.setLevel(logging.ERROR)
-        error_file_handler.setFormatter(CustomFormatter(log_format))
-        logger.addHandler(error_file_handler)
+        # print log messages to console
+        logger.addHandler(self.stdout_handler)
 
-    logger.propagate = False
-    return logger
+        # write log messages to file
+
+        logger.addHandler(self.file_handler)
+
+        # write error log messages to file
+        logger.addHandler(self.error_file_handler)
+
+        logger.propagate = False
+        return logger
+
+
+log = MyLogger()

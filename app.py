@@ -4,7 +4,7 @@ import json
 import requests as req
 from bs4 import BeautifulSoup
 import paho.mqtt.client as mqtt
-import log
+from log import log
 from config import Config
 from article import Article
 
@@ -16,9 +16,10 @@ class App:
         self.path = os.path.dirname(os.path.abspath(__file__))
         self.done_file_path = os.path.join(self.path, 'done.json')
         self.mqtt = mqtt.Client('app-saga-hamburg')
-        logger.debug("mqtt {0}".format(json.dumps(
-            {'host': Config.MQTT_BROKER_URL, 'port': Config.MQTT_BROKER_PORT, 'user': Config.MQTT_USER,
-             'pass': Config.MQTT_PASS})))
+        if Config.DEBUG:
+            logger.debug("mqtt {0}".format(json.dumps(
+                {'host': Config.MQTT_BROKER_URL, 'port': Config.MQTT_BROKER_PORT, 'user': Config.MQTT_USER,
+                 'pass': Config.MQTT_PASS})))
         self.mqtt.username_pw_set(username=Config.MQTT_USER, password=Config.MQTT_PASS)
 
         self.mqtt.connect(host=Config.MQTT_BROKER_URL, port=Config.MQTT_BROKER_PORT)

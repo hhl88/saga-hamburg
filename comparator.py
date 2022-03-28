@@ -1,6 +1,6 @@
 from article import Article
 import datetime
-import log
+from log import log
 import json
 from config import Config
 

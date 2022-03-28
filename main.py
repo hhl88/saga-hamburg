@@ -3,9 +3,10 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from comparator import SupportedComparator
 from app import App
-import log
+from log import log
 import time
 
+print(__name__)
 logger = log.setup_logger(__name__)
 log.setup_logger("apscheduler").setLevel(logging.INFO)
 log.setup_logger("urllib3").setLevel(logging.WARNING)
