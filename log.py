@@ -41,8 +41,7 @@ class MyLogger(Singleton):
     def __init__(self):
         super().__init__()
         if self._initialized:
-            print(111111)
-            log_format = "%(asctime)s [%(levelname)s] [%(threadName)s] [%(name)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
+            log_format = "%(asctime)s [%(levelname)s] [%(name)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
             log_filemode = "a"  # w: overwrite; a: append
 
             # setup stdout logger

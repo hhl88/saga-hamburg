@@ -63,11 +63,14 @@ class App:
                 logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
             if article.id not in done:
                 if article.available and any(compartor.is_match(article) for compartor in self.comparators):
+                    logger.info("New apartment found {0}: {1}".format(article.id, json.dumps(article.dump())))
                     if self.mqtt.is_connected():
-                        logger.info("Publish to mqtt: {0}: {1}".format(article.id, json.dumps(article.dump())))
+                        logger.info("Publishing to mqtt: {0}".format(article.id))
                         self.mqtt.publish('saga-hamburg/events',
                                           json.dumps(article.dump(), ensure_ascii=False, indent=4))
-                    done[article.id] = today.strftime("%d.%m.%Y")
+                        logger.info("Published to mqtt: {0}".format(article.id))
+
+                done[article.id] = today.strftime("%d.%m.%Y")
 
         with open(self.done_file_path, 'w') as f:
             json.dump(done, f, ensure_ascii=False, indent=4)
