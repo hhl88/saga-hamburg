@@ -51,10 +51,9 @@ class MyLogger(Singleton):
 
             path = os.path.dirname(os.path.abspath(__file__))
             # setup normal logger file
-            self.file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal'), when='W0',
+            self.file_handler = handlers.TimedRotatingFileHandler(os.path.join(path, 'normal.log'), when='midnight',
                                                                   encoding='utf8')
-            self.file_handler.suffix = '%Y-%m-%d.log'
-            self.file_handler.extMatch = r"^\d{4}\-\d{2}\-\d{2}\.log$"
+            self.file_handler.namer = lambda name: name.replace(".log", "") + ".log"
             self.file_handler.setLevel(logging.DEBUG)
             self.file_handler.setFormatter(CustomFormatter(log_format))
 
