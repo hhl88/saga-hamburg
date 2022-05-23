@@ -1,17 +1,17 @@
 import datetime
-from address import Address
-from cost import Cost
-from config import Config
+from .address import Address
+from .cost import Cost
 
 
 class Article:
-    def __init__(self, article_id: str, title: str, img_path: str = None, street: str = None, total_rent: float = None,
+    def __init__(self, article_id: str, title: str, img_link: str = None, link: str = None, apply_link: str = None,
+                 street: str = None, total_rent: float = None,
                  no_rooms: float = None, living_space: float = None):
         self.id = article_id
         self.title = title
-        self.img_link = "{0}{1}".format(Config.BASE_URL, img_path)
-        self.link = "{0}/objekt/wohnungen/{1}".format(Config.BASE_URL, article_id)
-        self.apply_link = "{0}/de/apply/{1}".format(Config.BASE_APPLY_URL, article_id)
+        self.img_link = img_link
+        self.link = link
+        self.apply_link = apply_link
         self.address = Address(street=street)
         self.costs = Cost(total_rent=total_rent)
         self.no_rooms = no_rooms
@@ -46,7 +46,7 @@ class Article:
 
         }
 
-    def _type(self):
+    def type(self):
         if self.is_house:
             return "House"
         return "Apartment, Floor: {0}, No of Floors: {1}, Elevator: {2}".format(self.floor, self.no_floor,
@@ -60,4 +60,4 @@ class Article:
                "\n     Available: {self.available}, from: {self.availableFrom}" \
                "\n     Image: {self.img_link}" \
                "\n     Link: {self.link}" \
-               "\n     Apply link: {self.apply_link}".format(self=self, type=self._type())
+               "\n     Apply link: {self.apply_link}".format(self=self, type=self.type())

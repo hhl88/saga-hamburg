@@ -1,7 +1,7 @@
-from article import Article
 import datetime
-from log import log
 import json
+from .article import Article
+from logger import log
 from config import Config
 
 logger = log.setup_logger(__name__)

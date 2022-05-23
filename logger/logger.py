@@ -58,7 +58,7 @@ class MyLogger(Singleton):
             self.file_handler.setFormatter(CustomFormatter(log_format))
 
             # setup error logger file
-            self.error_file_handler = handlers.RotatingFileHandler(os.path.join(path, 'error.log'),
+            self.error_file_handler = handlers.RotatingFileHandler(os.path.join(path, '../error.log'),
                                                                    maxBytes=1024 * 1024 * 5,
                                                                    encoding='utf8',
                                                                    backupCount=3)

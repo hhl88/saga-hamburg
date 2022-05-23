@@ -24,13 +24,15 @@ def _parse_int(val: Union[str, int]) -> int:  # pylint: disable=E1136
 
 class AppConfig:
     DEBUG: bool = False
-    BASE_URL: str
-    BASE_APPLY_URL: str
-    BASE_DETAIL_URL: str
-    MQTT_BROKER_URL: str
+    ENABLE_SAGA: bool = False
+    NOTIFICATION_TYPE: str
+    MQTT_BROKER_URL: str = ''
     MQTT_BROKER_PORT: int = 1883
-    MQTT_USER: str
-    MQTT_PASS: str
+    MQTT_USER: str = ''
+    MQTT_PASS: str = ''
+    MQTT_EVENT: str = ''
+    TELEGRAM_TOKEN: str = ''
+    TELEGRAM_CHAT_ID: str = ''
 
     """
     Map environment variables to class fields according to these rules:
