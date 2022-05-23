@@ -47,7 +47,6 @@ class App:
         self.notification.stop()
 
     def run(self):
-        logger.info("App running")
         if self.comparators is None or len(self.comparators) == 0:
             return
         today = datetime.date.today()
@@ -62,7 +61,6 @@ class App:
                     done[article_id] = date.strftime("%d.%m.%Y")
 
         for scanning_source in self.sources:
-            logger.info("App scanning_source: {0}".format(scanning_source))
             articles = scanning_source.find_articles()
 
             for idx, article in enumerate(articles):
