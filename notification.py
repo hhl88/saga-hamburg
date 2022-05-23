@@ -43,7 +43,8 @@ class Notification(threading.Thread):
                     self.queue.put((1, article))
 
             except queue.Empty:
-                logger.debug("Queue is empty")
+                if Config.DEBUG:
+                    logger.debug("Queue is empty")
 
     def notify(self, data: Article):
         if data is None:
