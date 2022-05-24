@@ -112,7 +112,13 @@ class Saga(Source):
                      json={'operationName': "property", 'variables': json.dumps(variables), 'query': query})
         if r.status_code == 200:
             json_data = json.loads(r.text)['data']['property']
-            data = json_data['data']
+            try:
+                data = json_data['data']
+            except TypeError:
+                logger.error(
+                    "Response doest not contain data: Article id: {0} - Response: {1}".format(article.id, json.dumps(
+                        json.loads(r.text))))
+                return
             if len(data['attachments']) > 0:
                 article.img_link = data['attachments'][0]['url']
             # address
@@ -141,5 +147,4 @@ class Saga(Source):
                 article.no_floor = data['numberOfFloors']
 
     def __str__(self):
-
         return "Source: Saga"
