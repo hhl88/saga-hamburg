@@ -28,7 +28,7 @@ class App:
         job_id = "apartment_hamburg_cron_job"
         try:
             logger.info("Adding cronjob")
-            scheduler.add_job(self.run, "cron", day_of_week="mon-sun", minute="*", id=job_id)
+            scheduler.add_job(self.run, "cron", day_of_week="mon-sun", minute="*", id=job_id, max_instances=3)
             logger.info("Starting cronjob")
             scheduler.start()
             while True:

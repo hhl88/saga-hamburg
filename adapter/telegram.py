@@ -29,7 +29,7 @@ A new apartment '{0}' was found on Saga.
   
   -  Rooms: {3} - Size: {4} m2
   
-  -  Costs: {5} base, {6} total, {7} deposit
+  -  Costs: {5} Base  -  {6} Total  -  {7} Deposit
   
   -  Available: {8}
   
