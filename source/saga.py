@@ -134,17 +134,20 @@ class Saga(Source):
             article.costs.deposit = data['bailment']
 
             # article info
+            article.title = json_data['name']
             article.living_space = data['size']
             article.no_rooms = data['rooms'] + (0.5 if data['halfRooms'] == 1 else 0)
             article.available = not json_data['rented']
             article.available_from = datetime.datetime.strptime(data['availableFrom']['dateAvailable'], '%Y-%m-%d')
             article.required_wbs = json_data['wbs'] if 'wbs' in json_data else False
+            article.basement = json_data['basementAvailable']
             if 'floor' in data and data['floor'] is None:
                 article.is_house = True
             else:
                 article.is_house = False
                 article.floor = data['floor']
                 article.no_floor = data['numberOfFloors']
+                article.has_elevator = data['elevator']
 
     def __str__(self):
         return "Source: Saga"

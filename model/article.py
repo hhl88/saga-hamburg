@@ -24,6 +24,7 @@ class Article:
         self.no_floor = 0
         self.has_elevator = False
         self.required_wbs = False
+        self.basement = False
 
     def dump(self):
         return {
@@ -49,8 +50,10 @@ class Article:
     def type(self):
         if self.is_house:
             return "House"
-        return "Apartment, Floor: {0}, No of Floors: {1}, Elevator: {2}".format(self.floor, self.no_floor,
-                                                                                self.has_elevator)
+        return "Apartment, Floor: {0}, No of Floors: {1}, Elevator: {2}, Basement: {3}".format(self.floor,
+                                                                                               self.no_floor,
+                                                                                               self.has_elevator,
+                                                                                               self.basement)
 
     def __str__(self):
         return "Article '{self.title}': {self.address} " \
