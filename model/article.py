@@ -60,7 +60,7 @@ class Article:
                "\n     Type: {type}" \
                "\n     Rooms: {self.no_rooms} - Size: {self.living_space} m2" \
                "\n     Costs: {self.costs}" \
-               "\n     Available: {self.available}, from: {self.availableFrom}" \
+               "\n     Available: {self.available}, from: {self.available_from}" \
                "\n     Image: {self.img_link}" \
                "\n     Link: {self.link}" \
                "\n     Apply link: {self.apply_link}".format(self=self, type=self.type())

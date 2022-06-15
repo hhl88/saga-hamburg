@@ -19,7 +19,7 @@ class Saga(Source):
         self.base_detail_url = "https://gql-ps.immomio.com"
         self.path = os.path.dirname(os.path.abspath(__file__))
 
-    def find_articles(self):
+    def find_articles(self, ignored_ids: list = None):
 
         soup = self._get_response(url=self.base_url + '/immobiliensuche', query_params={'type': "wohnungen"})
         # Get list of all pagination link
@@ -57,13 +57,15 @@ class Saga(Source):
         return [li.find('a', href=True)['href']
                 for li in ul.find_all('li', {'class': None}) if li is not None]
 
-    def _find_all_articles_in_page(self, soup: BeautifulSoup):
+    def _find_all_articles_in_page(self, soup: BeautifulSoup, ignored_ids: list = None):
         """
         Get all articles in "search" page
         """
         articles = []
         for ele in soup.find_all('div', {'class': 'teaser3--listing'}):
             article = self._get_article_from_element(ele)
+            if ignored_ids is not None and article.id in ignored_ids:
+                continue
             self._fulfill_article_info(article)
             articles.append(article)
         return articles
@@ -87,7 +89,7 @@ class Saga(Source):
         img = a.find('img')
         img_path = None
         if img is not None:
-            img_path = a.find('img')['src']
+            img_path = img['src']
 
         # street
         street = sub_info.find('span').text.strip()

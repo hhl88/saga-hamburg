@@ -40,8 +40,8 @@ A new apartment '{0}' was found on Saga.
            article.address.__str__(),
            article.type(),
            article.no_rooms, article.living_space,
-           '{:,}'.format(article.costs.base_rent), '{:,}'.format(article.costs.total_rent),
-           '{:,}'.format(article.costs.deposit),
+           article.costs.base_rent, article.costs.total_rent,
+           article.costs.deposit,
            article.available_from.strftime("%d.%m.%Y") if article.available_from is not None else None,
            article.link,
            article.apply_link)

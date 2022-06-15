@@ -25,6 +25,8 @@ def _parse_int(val: Union[str, int]) -> int:  # pylint: disable=E1136
 class AppConfig:
     DEBUG: bool = False
     ENABLE_SAGA: bool = False
+    ENABLE_IMMOBILIEN_SCOUT_24: bool = False
+    IMMOBILIEN_SCOUT_24_REESE_84_API_KEY: str = ''
     NOTIFICATION_TYPE: str
     MQTT_BROKER_URL: str = ''
     MQTT_BROKER_PORT: int = 1883

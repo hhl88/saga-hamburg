@@ -29,7 +29,7 @@ class Notification(threading.Thread):
 
         while True:
             try:
-                _, article = self.queue.get(timeout=10)
+                _, article = self.queue.get(timeout=150)
                 if Config.DEBUG:
                     logger.debug("Queue article article {0} : {1}".format(article.id, article.title))
                 res = self.adapter.send_notification(article=article)
