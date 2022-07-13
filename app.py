@@ -20,6 +20,7 @@ class App:
         self.comparators = comparators
         self.notification = Notification()
         self.sources = {}
+        print(Config.ENABLE_SAGA)
         if Config.ENABLE_SAGA:
             self.sources['saga'] = Saga()
 
@@ -65,7 +66,7 @@ class App:
             with open(self.done_file_path, 'r') as f:
                 json_data = json.load(f)
             for source_name in json_data:
-                if done[source_name] is None:
+                if source_name not in done:
                     done[source_name] = {}
                 for article_id in json_data[source_name]:
                     date = datetime.datetime.strptime(json_data[source_name][article_id], '%d.%m.%Y').date()
@@ -74,17 +75,17 @@ class App:
                         done[source_name][article_id] = date.strftime("%d.%m.%Y")
 
         for source_name in self.sources:
+            if source_name not in done:
+                done[source_name] = {}
             scanning_source = self.sources[source_name]
             articles = scanning_source.find_articles(done[source_name].keys())
             for idx, article in enumerate(articles):
                 if Config.DEBUG:
                     logger.debug('{0}: {1} '.format(idx + 1, json.dumps(article.dump())))
-                if article.id not in done:
+                if article.id not in done[source_name]:
                     if article.available and any(compartor.is_match(article) for compartor in self.comparators):
                         logger.info("New apartment found {0}: {1}".format(article.id, json.dumps(article.dump())))
                         self.notification.notify(data=article)
-                    if done[source_name] is None:
-                        done[source_name] = {}
                     done[source_name][article.id] = today.strftime("%d.%m.%Y")
 
         with open(self.done_file_path, 'w') as f:

@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from source import Source
 from logger import log
 from config import Config
+import numbers
 
 logger = log.setup_logger(__name__)
 
@@ -138,7 +139,7 @@ class Saga(Source):
             # article info
             article.title = data['name']
             article.living_space = data['size']
-            article.no_rooms = data['rooms'] + (0.5 if data['halfRooms'] == 1 else 0)
+            article.no_rooms = data['rooms'] + (data['halfRooms'] / 2 if isinstance(data['halfRooms'], numbers.Number) else 0)
             article.available = not json_data['rented']
             article.available_from = datetime.datetime.strptime(data['availableFrom']['dateAvailable'], '%Y-%m-%d')
             article.required_wbs = json_data['wbs'] if 'wbs' in json_data else False
