@@ -141,7 +141,8 @@ class Saga(Source):
             article.living_space = data['size']
             article.no_rooms = data['rooms'] + (data['halfRooms'] / 2 if isinstance(data['halfRooms'], numbers.Number) else 0)
             article.available = not json_data['rented']
-            article.available_from = datetime.datetime.strptime(data['availableFrom']['dateAvailable'], '%Y-%m-%d')
+            if 'availableFrom' in data and 'dateAvailable' in data['availableFrom'] and data['availableFrom']['dateAvailable'] is not None:
+                article.available_from = datetime.datetime.strptime(data['availableFrom']['dateAvailable'], '%Y-%m-%d')
             article.required_wbs = json_data['wbs'] if 'wbs' in json_data else False
             article.basement = data['basementAvailable']
             if 'floor' in data and data['floor'] is None:

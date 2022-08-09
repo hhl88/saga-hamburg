@@ -20,7 +20,7 @@ class App:
         self.comparators = comparators
         self.notification = Notification()
         self.sources = {}
-        print(Config.ENABLE_SAGA)
+
         if Config.ENABLE_SAGA:
             self.sources['saga'] = Saga()
 
@@ -88,5 +88,5 @@ class App:
                         self.notification.notify(data=article)
                     done[source_name][article.id] = today.strftime("%d.%m.%Y")
 
-        with open(self.done_file_path, 'w') as f:
+        with open(self.done_file_path, 'w+') as f:
             json.dump(done, f, ensure_ascii=False, indent=4)

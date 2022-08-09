@@ -4,8 +4,6 @@ from typing import get_type_hints, Union
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv(), verbose=True, override=True)
-saga = os.environ.get("ENABLE_SAGA")
-print(os.environ)
 
 class AppConfigError(Exception):
     pass
